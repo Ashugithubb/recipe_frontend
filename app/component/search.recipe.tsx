@@ -45,7 +45,7 @@ useEffect(() => {
       if (difficulty) queryParams.append('difficultyLevel', difficulty);
       if (category) queryParams.append('category', category);
 
-      const res = await axios.get(`http://localhost:3001/recipe/filter?${queryParams.toString()}`, {
+      const res = await axios.get(``, {
         withCredentials: true,
       });
       setRecipes(res.data);

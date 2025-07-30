@@ -2,37 +2,46 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export interface Recipe {
-   id:number, 
+  id: number,
   title: string;
   ingredients: string[];
   steps: string[];
 }
 
 interface RecipeState {
-    recipes: Recipe[];
-    loading: boolean;
-    error: string | null;
+  recipes: Recipe[];
+  total:number,
+  page:number,
+  limit:number
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: RecipeState = {
-    recipes: [],
-    loading: false,
-    error: null,
+  recipes: [],
+  total:0,
+  page:1,
+  limit:0,
+  loading: false,
+  error: null,
 };
-
+export interface GetRecipesQuery {
+  page?: number;
+  limit?: number;
+  title?: string;
+  difficultyLevel?: string;
+  category?: string;
+}
 export const getAllRecipesThunk = createAsyncThunk(
-  'getAllRecipesThunk',
-  async (query: { limit: number; page: number }, thunkAPI) => {
-     console.log("bef0re try bl0ck");
+  'recipes/getFilteredRecipes',
+  async (query: GetRecipesQuery, { rejectWithValue }) => {
     try {
-      const res = await axios.get(
-        `http://localhost:3001/recipe/all?page=${query.page}&limit=${query.limit}`,
-        { withCredentials: true }
-      );
-       console.log("res data:",res.data)
-      return res.data;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.response?.data || 'Failed to fetch recipes');
+      const response = await axios.get('http://localhost:3001/recipes', {
+        params: query,
+      });
+      return response.data; // { recepie, total, page, limit }
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch recipes');
     }
   }
 );
@@ -40,29 +49,29 @@ export const getAllRecipesThunk = createAsyncThunk(
 
 
 const recipeSlice = createSlice({
-    name: 'recipe',
-    initialState,
-    reducers: {
-        clearRecipes: (state) => {
-            state.recipes = [];
-            state.error = null;
-        },
+  name: 'recipe',
+  initialState,
+  reducers: {
+    clearRecipes: (state) => {
+      state.recipes = [];
+      state.error = null;
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(getAllRecipesThunk.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(getAllRecipesThunk.fulfilled, (state, action: PayloadAction<Recipe[]>) => {
-                state.loading = false;
-                state.recipes = action.payload;
-            })
-            .addCase(getAllRecipesThunk.rejected, (state, action) => {
-                state.loading = false;
-               state.error = action.payload as string;
-            });
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getAllRecipesThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllRecipesThunk.fulfilled, (state, action: PayloadAction<Recipe[]>) => {
+        state.loading = false;
+        state.recipes = action.payload;
+      })
+      .addCase(getAllRecipesThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+  },
 });
 
 export const { clearRecipes } = recipeSlice.actions;
