@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import userReducer from '../slice/user.slice';
 import storage from 'redux-persist/lib/storage'; 
 import { persistStore, persistReducer } from 'redux-persist';
-
+import recipeReducer from '../slice/recipe.slice';
 const persistConfig = {
   key: 'root',
   storage,
@@ -14,6 +14,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: userReducer,
+  recipe: recipeReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

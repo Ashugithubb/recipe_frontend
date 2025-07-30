@@ -2,8 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
-
 export const UserInfo = createAsyncThunk(
   'user/getProfile',
   async (_, thunkAPI) => {
@@ -12,7 +10,7 @@ export const UserInfo = createAsyncThunk(
         withCredentials: true,
       });
      console.log("data:", res.data);
-      return res.data; // Return user data to the reducer
+      return res.data; 
     } catch (error) {
       return thunkAPI.rejectWithValue('Failed to fetch user profile');
     }

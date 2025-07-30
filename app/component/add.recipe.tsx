@@ -1,7 +1,8 @@
-// components/AddRecipe.tsx
+'use client'
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { recipeSchema, RecipeInput } from "../schema/recipe.schema";
+import { ToastContainer, toast } from 'react-toastify';
 import {
   TextField,
   Button,
@@ -11,12 +12,11 @@ import {
   Divider,
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
-import axios from "axios";
 import { useAppDispatch } from "../redux/hook/hook";
-import { createRecipe } from "../redux/async/add.recipe";
+import { createRecipe } from "../redux/thunk/add.recipe";
 
 export const AddRecipe = () => {
-const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const {
     control,
     register,
@@ -26,9 +26,8 @@ const dispatch = useAppDispatch();
     resolver: zodResolver(recipeSchema),
     defaultValues: {
       title: "",
-      ingredients: [""],
-      steps: [""],
-      imageUrl: "",
+      ingredients: [{ value: "" }],
+      steps: [{ value: "" }],
     },
   });
 
@@ -36,7 +35,7 @@ const dispatch = useAppDispatch();
     fields: ingredientFields,
     append: appendIngredient,
     remove: removeIngredient,
-  } = useFieldArray<RecipeInput, "ingredients">({ control, name: "ingredients" });
+  } = useFieldArray({ control, name: "ingredients" });
 
   const {
     fields: stepFields,
@@ -44,14 +43,21 @@ const dispatch = useAppDispatch();
     remove: removeStep,
   } = useFieldArray({ control, name: "steps" });
 
-  const onSubmit = async (data: RecipeInput) => {
-    dispatch(createRecipe(data));
+  const onSubmit = (data: RecipeInput) => {
+    const transformedData = {
+      title: data.title,
+      ingredients: data.ingredients.map((item) => item.value),
+      steps: data.steps.map((item) => item.value),
+    };
+
+    dispatch(createRecipe(transformedData));
+    toast("recpie Added");
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, mx: "auto", p: 2 }}>
       <Typography variant="h5" mb={2}>Add Recipe</Typography>
-
+      <ToastContainer />
       <TextField
         label="Title"
         fullWidth
@@ -66,14 +72,14 @@ const dispatch = useAppDispatch();
         <Box key={field.id} display="flex" gap={1} alignItems="center" mb={1}>
           <TextField
             fullWidth
-            {...register(`ingredients.${index}` as const)}
-            error={!!errors.ingredients?.[index]}
-            helperText={errors.ingredients?.[index]?.message}
+            {...register(`ingredients.${index}.value` as const)}
+            error={!!errors.ingredients?.[index]?.value}
+            helperText={errors.ingredients?.[index]?.value?.message}
           />
           <IconButton onClick={() => removeIngredient(index)}><Delete /></IconButton>
         </Box>
       ))}
-      <Button startIcon={<Add />} onClick={() => appendIngredient("")}>
+      <Button startIcon={<Add />} onClick={() => appendIngredient({ value: "" })}>
         Add Ingredient
       </Button>
 
@@ -85,25 +91,16 @@ const dispatch = useAppDispatch();
           <TextField
             fullWidth
             multiline
-            {...register(`steps.${index}` as const)}
-            error={!!errors.steps?.[index]}
-            helperText={errors.steps?.[index]?.message}
+            {...register(`steps.${index}.value` as const)}
+            error={!!errors.steps?.[index]?.value}
+            helperText={errors.steps?.[index]?.value?.message}
           />
           <IconButton onClick={() => removeStep(index)}><Delete /></IconButton>
         </Box>
       ))}
-      <Button startIcon={<Add />} onClick={() => appendStep("")}>
+      <Button startIcon={<Add />} onClick={() => appendStep({ value: "" })}>
         Add Step
       </Button>
-
-      <TextField
-        label="Image URL"
-        fullWidth
-        margin="normal"
-        {...register("imageUrl")}
-        error={!!errors.imageUrl}
-        helperText={errors.imageUrl?.message}
-      />
 
       <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3 }}>
         Submit Recipe

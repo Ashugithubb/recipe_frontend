@@ -16,17 +16,15 @@ import {
 interface RecipeCardProps {
   id:number,
   title: string;
-  imageUrl: string;
   ingredients: string[];
   steps: string[];
 }
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import axios from 'axios';
-const RecipeCard: React.FC<RecipeCardProps> = ({ id,title, imageUrl, ingredients, steps }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({ id,title, ingredients, steps }) => {
     const handelFavouriteClick = async (id:number)=>{
             try{
-                const res = await axios.post(`http://localhost:3001/recipe/favourite/${id}`,{},{withCredentials: true}
-                
+                const res = await axios.post(`http://localhost:3001/favorite/${id}`,{},{withCredentials: true}
                 );
                 console.log(res.data);
             }

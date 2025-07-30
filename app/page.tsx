@@ -7,6 +7,7 @@ import { AddRecipe } from "./component/add.recipe";
 import RecipeList from "./component/recipe.list";
 import SeeAllSurvey from "./component/search.recipe";
 import { toast ,ToastContainer} from "react-toastify";
+import { useRouter } from "next/navigation";
 
 
 export default function Home() {
@@ -14,7 +15,7 @@ export default function Home() {
   const [openAdd, setOpenAdd] = useState(false);
   const fav = useAppSelector((state)=>state.user.profile?.favourite)
   const email = useAppSelector((state)=>state.user.profile?.email)
-  console.log(fav);
+  const router = useRouter();
   const handeAddClick = () => {
     if(!email){
       toast("Log in to add recipe");
@@ -24,12 +25,15 @@ export default function Home() {
     }
    
   }
+  const handelFavClick = ()=>{
+    router.push('/favorite')
+  }
 
   return (
 
     <>
       <Navbar />
-     <Box sx={{display:"flex",justifyContent:"end"}}> <Button variant="contained">Favorites Recipe</Button></Box>
+     <Box onClick={handelFavClick} sx={{display:"flex",justifyContent:"end"}}> <Button variant="contained">Favorites Recipe</Button></Box>
       <SeeAllSurvey />
       <RecipeList />
       <Button onClick={handeAddClick} variant="contained">Add Recipe</Button>

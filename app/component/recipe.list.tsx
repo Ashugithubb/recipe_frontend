@@ -1,7 +1,10 @@
-// components/RecipeList.tsx
+
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography, Container } from '@mui/material';
+import { Box, CircularProgress, Typography, Container, Pagination } from '@mui/material';
 import RecipeCard from './recipe.card';
+import { useAppDispatch, useAppSelector } from '../redux/hook/hook';
+import { getAllRecipesThunk } from '../redux/slice/recipe.slice';
+
 
 interface Recipe {
   id: number;
@@ -12,44 +15,17 @@ interface Recipe {
 }
 
 const RecipeList: React.FC = () => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const recipes = useAppSelector((state)=>state.recipe.recipes);
+  const [page, setPage] = useState(1);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    fetch('http://localhost:3001/recipe/all') // Replace with your backend API
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch recipes');
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setRecipes(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+    const fetchRecipes = async () => {
+       dispatch(getAllRecipesThunk({ limit: 4, page: page  }));
+    };
+    fetchRecipes();
+  }, [dispatch,page]);
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" mt={6}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box mt={6}>
-        <Typography color="error" align="center" variant="h6">
-          Error: {error}
-        </Typography>
-      </Box>
-    );
-  }
 
   return (
     <Container sx={{ mt: 4 }}>
@@ -69,7 +45,15 @@ const RecipeList: React.FC = () => {
           </Box>
         ))}
       </Box>
+      <Pagination
+        count={10}
+        variant="outlined"
+        shape="rounded"
+        page={page}
+        onChange={(event, value) => setPage(value)}
+      />
     </Container>
+
   );
 };
 

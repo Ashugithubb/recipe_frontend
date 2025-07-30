@@ -5,7 +5,7 @@ export interface RecipeInput {
   title: string;
   ingredients: string[];
   steps: string[];
-  imageUrl: string;
+
 }
 
 export const createRecipe = createAsyncThunk(

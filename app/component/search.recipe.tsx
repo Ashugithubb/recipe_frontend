@@ -11,8 +11,12 @@ import { ToastContainer, toast } from 'react-toastify';
 export default function SeeAllSurvey() {
     const [openSearch, setopenSerch] = useState(true);
     const [recipe, setRecipes] = useState([]);
-    const [searchTittle,setsearchTittle] = useState('');
-    
+    const [searchTittle, setsearchTittle] = useState('');
+
+    const [difficulty, setDifficulty] = useState('');
+    const [category, setCategory] = useState('');
+
+
 
     useEffect(() => {
         const debounce = setTimeout(async () => {
@@ -33,36 +37,85 @@ export default function SeeAllSurvey() {
         return () => clearTimeout(debounce);
     }, [searchTittle]);
 
+useEffect(() => {
+  const fetchFilteredRecipes = async () => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (difficulty) queryParams.append('difficultyLevel', difficulty);
+      if (category) queryParams.append('category', category);
 
+      const res = await axios.get(`http://localhost:3001/recipe/filter?${queryParams.toString()}`, {
+        withCredentials: true,
+      });
+      setRecipes(res.data);
+    } catch (error) {
+      console.error("Filter fetch error:", error);
+    }
+  };
 
+  fetchFilteredRecipes();
+}, [difficulty, category]);
 
     return (
         <>
-            <ToastContainer/>
-          
-                           <TextField
-                           label="Search Survey By Tittle"
-                            margin="normal"
-                            value={searchTittle}
-                            onChange={(e) => setsearchTittle(e.target.value)}
-                        />
-        
-                    
-                    {
+            <ToastContainer />
+            <Box display="flex" gap={2} mt={2}>
+                <TextField
+                    select
+                    // label="Difficulty"
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value)}
+                    SelectProps={{ native: true }}
+                >
+                    <option value="">All</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                </TextField>
+
+                <TextField
+                    select
+                    // label="Category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    SelectProps={{ native: true }}
+                >
+                    <option value="">All</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                    <option value="Snack">Snack</option>
+                </TextField>
+            </Box>
+
+            <TextField
+                label="Search Recipe By Tittle"
+                margin="normal"
+                value={searchTittle}
+                onChange={(e) => setsearchTittle(e.target.value)}
+            />
+
+
+            {
                 openSearch && (
                     recipe.map((r: any) => (
                         <Box key={r.title} p={2} border={1} borderRadius={2} m={1} width={200}>
                             <Typography variant="h6">
-                                {r.title} 
+                                {r.title}
                             </Typography>
-                        
+                            <Typography variant="h6">
+                                {r.ingredient}
+                            </Typography>
+                            <Typography variant="h6">
+                                {r.steps}
+                            </Typography>
                         </Box>
                     ))
                 )
             }
-               
 
-            
+
+
         </>
     )
 }
