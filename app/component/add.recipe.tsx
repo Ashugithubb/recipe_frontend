@@ -52,6 +52,7 @@ export const AddRecipe = () => {
 
     dispatch(createRecipe(transformedData));
     toast("recpie Added");
+    location.reload();
   };
 
   return (

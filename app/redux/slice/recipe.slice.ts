@@ -29,7 +29,7 @@ export const getAllRecipesThunk = createAsyncThunk(
         `http://localhost:3001/recipe/all?page=${query.page}&limit=${query.limit}`,
         { withCredentials: true }
       );
-       console.log("res data:",res.data);
+       console.log("res data:",res.data)
       return res.data;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(err.response?.data || 'Failed to fetch recipes');
@@ -38,7 +38,7 @@ export const getAllRecipesThunk = createAsyncThunk(
 );
 
 
-// Slice
+
 const recipeSlice = createSlice({
     name: 'recipe',
     initialState,
@@ -57,7 +57,6 @@ const recipeSlice = createSlice({
             .addCase(getAllRecipesThunk.fulfilled, (state, action: PayloadAction<Recipe[]>) => {
                 state.loading = false;
                 state.recipes = action.payload;
-                
             })
             .addCase(getAllRecipesThunk.rejected, (state, action) => {
                 state.loading = false;

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from 'react-hook-form'
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
+import RecipeCard from "./recipe.card";
 
 export default function SeeAllSurvey() {
     const [openSearch, setopenSerch] = useState(true);
@@ -100,6 +101,7 @@ useEffect(() => {
                 openSearch && (
                     recipe.map((r: any) => (
                         <Box key={r.title} p={2} border={1} borderRadius={2} m={1} width={200}>
+                            <RecipeCard {...r} />
                             <Typography variant="h6">
                                 {r.title}
                             </Typography>
