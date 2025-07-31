@@ -97,7 +97,7 @@ useEffect(() => {
             />
 
 
-            {
+            {/* {
                 openSearch && (
                     recipe.map((r: any) => (
                         <Box key={r.title} p={2} border={1} borderRadius={2} m={1} width={200}>
@@ -114,7 +114,7 @@ useEffect(() => {
                         </Box>
                     ))
                 )
-            }
+            } */}
 
 
 
